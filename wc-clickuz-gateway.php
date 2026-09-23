@@ -3,7 +3,7 @@
  * Plugin Name: Woocommerce CLICK Payment Method
  * Plugin URI: https://click.uz
  * Description: CLICK Payment Method Plugin for WooCommerce
- * Version: 1.2.0
+ * Version: 1.2.1
  * Author: OOO "Click"
  * Author URI: https://click.uz
  * Text Domain: clickuz
@@ -21,8 +21,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'CLICK_VERSION', '1.2.0' );
-define( 'CLICK_DB_VERSION', '1.1' );
+define( 'CLICK_VERSION', '1.2.1' );
+define( 'CLICK_DB_VERSION', '1.2' );
 define( 'CLICK_PLUGIN_FILE', __FILE__ );
 define( 'CLICK_LOGO', plugin_dir_url( __FILE__ ) . 'click-logo.png' );
 define( 'CLICK_DELIMITER', '|' );
@@ -158,8 +158,6 @@ final class WC_ClickUz {
   error bigint(20) NOT NULL DEFAULT 0,
   error_note varchar(255) DEFAULT NULL,
   status varchar(32) DEFAULT NULL,
-  created_at datetime DEFAULT NULL,
-  updated_at datetime DEFAULT NULL,
   PRIMARY KEY  (ID),
   KEY merchant_trans_id (merchant_trans_id),
   KEY click_trans_id (click_trans_id)

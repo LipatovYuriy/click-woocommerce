@@ -70,9 +70,9 @@ class WC_Gateway_Clickuz extends WC_Payment_Gateway {
 		}
 
 		/**
-		 * CLICK settles in UZS. Return true from this filter if your shop converts elsewhere.
+		 * CLICK settles in UZS, but shops may convert themselves — no hard currency check here.
 		 */
-		return (bool) apply_filters( 'clickuz_is_available', 'UZS' === get_woocommerce_currency(), $this );
+		return (bool) apply_filters( 'clickuz_is_available', true, $this );
 	}
 
 	public function get_icon() {
@@ -110,7 +110,14 @@ class WC_Gateway_Clickuz extends WC_Payment_Gateway {
 	 * @return string
 	 */
 	public static function get_amount( $order ) {
-		return number_format( (float) $order->get_total(), 2, '.', '' );
+		$total = round( (float) $order->get_total(), 2 );
+
+		// The CLICK payment page expects whole sums; send decimals only when they exist.
+		if ( abs( $total - round( $total ) ) < 0.005 ) {
+			return number_format( $total, 0, '.', '' );
+		}
+
+		return number_format( $total, 2, '.', '' );
 	}
 
 	/**
@@ -166,8 +173,6 @@ class WC_Gateway_Clickuz extends WC_Payment_Gateway {
 			'amount'            => self::get_amount( $order ),
 			'return_url'        => self::get_return_url_for( $order ),
 		);
-
-		$order->update_status( 'pending', __( 'Awaiting CLICK payment.', 'clickuz' ) );
 
 		self::log( 'Redirecting order #' . $order->get_id() . ' to CLICK: ' . wp_json_encode( $query_args ) );
 

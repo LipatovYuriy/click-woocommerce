@@ -6,7 +6,7 @@ Tested up to: 6.8
 Requires PHP: 7.4
 WC requires at least: 7.0
 WC tested up to: 10.2
-Stable tag: 1.2.0
+Stable tag: 1.2.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -24,6 +24,14 @@ CLICK_MERCHANT_ID, CLICK_MERCHANT_USER_ID, CLICK_SERVICE_ID, CLICK_SECRET_KEY
 
 == Changelog ==
 
+= 1.2.1 =
+* Fix - Сумма снова передаётся целым числом (как в рабочей 1.1.1); дробная часть шлётся только если она реально есть.
+* Fix - Убрана сверка service_id в колбэках — при несовпадении с кабинетом давала -1 Sign check error.
+* Fix - Убраны колонки created_at/updated_at: вставка больше не зависит от успешного ALTER таблицы.
+* Fix - Снята жёсткая проверка валюты UZS в is_available() (осталась только проверка заполненных кредов).
+* Fix - process_payment() не переводит заказ в pending принудительно (конфликтовало со Store API на блоках).
+* Tweak - Ошибки $wpdb пишутся в лог clickuz при ответах -7.
+
 = 1.2.0 =
 * Fix - Объявлена совместимость с HPOS (custom_order_tables).
 * Fix - prepare(): заказ теперь сохраняется (статус on-hold и transaction_id больше не теряются).
@@ -38,4 +46,4 @@ CLICK_MERCHANT_ID, CLICK_MERCHANT_USER_ID, CLICK_SERVICE_ID, CLICK_SECRET_KEY
 * Fix - Экранирование вывода на странице оплаты, JSON-параметры для popup-кнопки.
 * Tweak - Blocks: передаются description и supports, версия скрипта, переводы.
 * Tweak - Настройки: заголовок/описание метода, debug-лог (WooCommerce > Status > Logs, source: clickuz).
-* Tweak - Схема БД обновляется при обновлении плагина, добавлены индексы и created_at/updated_at.
+* Tweak - Схема БД обновляется при обновлении плагина, добавлены индексы.

@@ -155,12 +155,11 @@ class WC_ClickAPI {
 			'error'             => isset( $post['error'] ) ? (int) $post['error'] : 0,
 			'error_note'        => isset( $post['error_note'] ) ? substr( sanitize_text_field( $post['error_note'] ), 0, 255 ) : '',
 			'status'            => $status,
-			'updated_at'        => current_time( 'mysql' ),
 		);
 	}
 
 	private function row_formats() {
-		return array( '%d', '%d', '%d', '%d', '%f', '%d', '%s', '%s', '%s' );
+		return array( '%d', '%d', '%d', '%d', '%f', '%d', '%s', '%s' );
 	}
 
 	/**
@@ -209,10 +208,6 @@ class WC_ClickAPI {
 			return $this->error( -1, __( 'Sign check error', 'clickuz' ) );
 		}
 
-		if ( $this->service_id && (string) $this->service_id !== (string) $post['service_id'] ) {
-			return $this->error( -1, __( 'Sign check error', 'clickuz' ) );
-		}
-
 		$order = $this->get_order( $post['merchant_trans_id'] );
 
 		if ( ! $order ) {
@@ -238,12 +233,11 @@ class WC_ClickAPI {
 		$formats = $this->row_formats();
 
 		if ( ! $prepare_id ) {
-			$data['created_at'] = current_time( 'mysql' );
-			$formats[]          = '%s';
-
 			$inserted = $wpdb->insert( $this->table, $data, $formats ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 
 			if ( false === $inserted ) {
+				WC_Gateway_Clickuz::log( 'DB insert failed: ' . $wpdb->last_error, 'error' );
+
 				return $this->error( -7, __( 'Failed to update user', 'clickuz' ) );
 			}
 
@@ -254,6 +248,8 @@ class WC_ClickAPI {
 			$updated = $wpdb->update( $this->table, $data, array( 'ID' => $prepare_id ), $formats, array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 
 			if ( false === $updated ) {
+				WC_Gateway_Clickuz::log( 'DB update failed: ' . $wpdb->last_error, 'error' );
+
 				return $this->error( -7, __( 'Failed to update user', 'clickuz' ) );
 			}
 		}
@@ -307,10 +303,6 @@ class WC_ClickAPI {
 		);
 
 		if ( ! hash_equals( $sign_string, (string) $post['sign_string'] ) ) {
-			return $this->error( -1, __( 'Sign check error', 'clickuz' ) );
-		}
-
-		if ( $this->service_id && (string) $this->service_id !== (string) $post['service_id'] ) {
 			return $this->error( -1, __( 'Sign check error', 'clickuz' ) );
 		}
 
@@ -380,6 +372,8 @@ class WC_ClickAPI {
 		);
 
 		if ( false === $updated ) {
+			WC_Gateway_Clickuz::log( 'DB update failed: ' . $wpdb->last_error, 'error' );
+
 			return $this->error( -7, __( 'Failed to update user', 'clickuz' ) );
 		}
 
